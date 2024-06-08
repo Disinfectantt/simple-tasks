@@ -6,3 +6,7 @@
     width: 100vw;
     flex-direction: column;
 }
+
+nav.main-tabs ul li .selected{
+    text-decoration: underline;
+}

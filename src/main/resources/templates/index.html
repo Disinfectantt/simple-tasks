@@ -4,6 +4,9 @@
       xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:replace="~{head :: common-head}"></head>
 <body>
-<div th:replace="logout_bth::logout-btn"></div>
+<header th:replace="~{header :: nav-header}"></header>
+<div id="tab-content" role="tabpanel" class="tab-content" hx-get="/all_tasks" hx-trigger="load">
+    <article aria-busy="true"></article>
+</div>
 </body>
 </html>
