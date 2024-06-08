@@ -23,7 +23,7 @@ public class TasksController {
     @GetMapping("/")
     public String all(Model model) {
         List<Task> tasks = taskRepo.findAll();
-        if(tasks.isEmpty()) {
+        if (tasks.isEmpty()) {
             return "empty";
         }
         model.addAttribute("tasks", tasks);

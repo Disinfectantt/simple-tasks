@@ -1,0 +1,18 @@
+<div th:fragment="content(btn_title, template)">
+    <button data-target="modal-add-new-task"
+            class="pico-background-green-650 modal-btn"
+            th:text="${btn_title}">
+    </button>
+    <dialog id="modal-add-new-task">
+        <article>
+            <header>
+                <button aria-label="Close"
+                        rel="prev"
+                        class="modal-btn"
+                        data-target="modal-add-new-task"
+                ></button>
+            </header>
+            <div th:replace="${template}"></div>
+        </article>
+    </dialog>
+</div>
