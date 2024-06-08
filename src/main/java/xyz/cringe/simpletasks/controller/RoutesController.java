@@ -16,8 +16,4 @@ public class RoutesController {
         return "error";
     }
 
-    @GetMapping("/all_tasks")
-    public String allTasksPage() {
-        return "pages/all_tasks";
-    }
 }

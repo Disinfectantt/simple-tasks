@@ -1,0 +1,5 @@
+<div class="container tasks-wrapper">
+    <article th:each="book : ${tasks}" class="task-wrapper">
+        <div th:replace="~{layouts.task :: task(${tasks})}"></div>
+    </article>
+</div>

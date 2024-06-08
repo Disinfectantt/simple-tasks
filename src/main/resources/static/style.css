@@ -10,3 +10,8 @@
 nav.main-tabs ul li .selected{
     text-decoration: underline;
 }
+
+.tasks-wrapper{
+    display: grid;
+    grid-template-columns: repeat(6, 60px 3fr);
+}
