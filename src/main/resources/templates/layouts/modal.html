@@ -1,18 +1,21 @@
-<div th:fragment="content(btn_title, template)">
-    <button data-target="modal-add-new-task"
+<div th:fragment="content(btn_title, modal_id, form_url)" class="container">
+    <button
+            th:attr="data-target=${modal_id}, hx-get=${form_url}"
             class="pico-background-green-650 modal-btn"
-            th:text="${btn_title}">
+            th:text="${btn_title}"
+            hx-target="#form-edit"
+            hx-swap="outerHTML">
     </button>
-    <dialog id="modal-add-new-task">
+    <dialog th:id="${modal_id}" class="modal">
         <article>
             <header>
                 <button aria-label="Close"
                         rel="prev"
                         class="modal-btn"
-                        data-target="modal-add-new-task"
+                        th:attr="data-target=${modal_id}"
                 ></button>
             </header>
-            <div th:replace="${template}"></div>
+            <div id="form-edit"></div>
         </article>
     </dialog>
 </div>

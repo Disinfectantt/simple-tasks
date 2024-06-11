@@ -1,10 +1,12 @@
 package xyz.cringe.simpletasks.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import xyz.cringe.simpletasks.model.Task;
 import xyz.cringe.simpletasks.repo.TaskRepo;
 
@@ -23,11 +25,19 @@ public class TasksController {
     @GetMapping("/")
     public String all(Model model) {
         List<Task> tasks = taskRepo.findAll();
-        if (tasks.isEmpty()) {
-            return "empty";
-        }
         model.addAttribute("tasks", tasks);
         return "pages/all_tasks";
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<Void> add(@Valid @ModelAttribute("task") Task task, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("task", task);
+            model.addAttribute("errors", result.getAllErrors());
+            return ResponseEntity.badRequest().build();
+        }
+        taskRepo.save(task);
+        return ResponseEntity.ok().build();
     }
 
 }

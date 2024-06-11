@@ -3,11 +3,25 @@
         <ul class="tab-list" role="tablist">
             <li>
                 <a hx-get="/tasks/" hx-target="#tab-content" class="selected" role="tab" aria-selected="true"
-                   aria-controls="tab-content">Все таски</a>
+                   aria-controls="tab-content">Tasks</a>
+            </li>
+            <li>
+                <a hx-get="/teams/" hx-target="#tab-content" role="tab" aria-selected="true"
+                   aria-controls="tab-content">Teams</a>
             </li>
             <li>
                 <div th:replace="~{logout_bth :: logout-btn}"></div>
             </li>
         </ul>
     </nav>
+    <script>
+        document.querySelectorAll('.tab-list a').forEach((tab) => {
+            tab.addEventListener('click', (event) => {
+                document.querySelectorAll('.tab-list a').forEach((otherTab) => {
+                    otherTab.classList.remove('selected');
+                });
+                event.currentTarget.classList.add('selected');
+            });
+        });
+    </script>
 </header>

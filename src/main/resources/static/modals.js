@@ -6,19 +6,24 @@ const scrollbarWidthCssVar = "--pico-scrollbar-width";
 const animationDuration = 400; // ms
 let visibleModal = null;
 
-// Toggle modal
-document.querySelectorAll(".modal-btn").forEach(modal => {
-    modal.addEventListener("click", (event) => {
-        event.preventDefault();
-        const modal = document.getElementById(event.currentTarget.dataset.target);
-        if (!modal) return;
-        modal && (modal.open ? closeModal(modal) : openModal(modal));
+document.body.addEventListener('htmx:afterOnLoad', () => {
+    document.querySelectorAll(".modal-btn").forEach(modal => {
+        modal.addEventListener("click", (event) => {
+            toggleModal(event);
+        });
     });
 });
 
+const toggleModal = (evt) => {
+    evt.preventDefault();
+    const modal = document.getElementById(evt.currentTarget.dataset.target);
+    if (!modal) return;
+    modal && (modal.open ? closeModal(modal) : openModal(modal));
+};
+
 // Open modal
 const openModal = (modal) => {
-    const { documentElement: html } = document;
+    const {documentElement: html} = document;
     const scrollbarWidth = getScrollbarWidth();
     if (scrollbarWidth) {
         html.style.setProperty(scrollbarWidthCssVar, `${scrollbarWidth}px`);
@@ -34,7 +39,7 @@ const openModal = (modal) => {
 // Close modal
 const closeModal = (modal) => {
     visibleModal = null;
-    const { documentElement: html } = document;
+    const {documentElement: html} = document;
     html.classList.add(closingClass);
     setTimeout(() => {
         html.classList.remove(closingClass, isOpenClass);
@@ -63,7 +68,10 @@ const getScrollbarWidth = () => {
     return window.innerWidth - document.documentElement.clientWidth;
 };
 
-// Is scrollbar visible
-const isScrollbarVisible = () => {
-    return document.body.scrollHeight > screen.height;
-};
+function htmxCloseModal(evt){
+    let m = this.closest("dialog.modal");
+    if(evt.detail.xhr.status === 200){
+        toggleModal(m);
+        //TODO
+    }
+}

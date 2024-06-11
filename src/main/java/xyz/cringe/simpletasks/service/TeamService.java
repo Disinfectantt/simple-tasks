@@ -1,6 +1,7 @@
 package xyz.cringe.simpletasks.service;
 
 import org.springframework.stereotype.Service;
+import xyz.cringe.simpletasks.dto.TeamDto;
 import xyz.cringe.simpletasks.model.Team;
 import xyz.cringe.simpletasks.repo.TeamRepo;
 
@@ -22,7 +23,20 @@ public class TeamService {
         return teamRepo.findById(id).orElse(null);
     }
 
-    public void createTeam(Team team) {
+    public void createTeam(TeamDto teamDto) {
+        Team team = new Team();
+        team.setName(teamDto.getName());
+        team.setEnabled(teamDto.getEnabled());
         teamRepo.save(team);
+    }
+
+    public TeamDto getTeamByName(String name) {
+        TeamDto teamDto = new TeamDto();
+        Team team = teamRepo.findByName(name);
+        if (team != null) {
+            teamDto.setName(team.getName());
+            teamDto.setEnabled(team.getEnabled());
+        }
+        return teamDto;
     }
 }
