@@ -3,11 +3,11 @@
         <ul class="tab-list" role="tablist">
             <li>
                 <a hx-get="/tasks/" hx-target="#tab-content" class="selected" role="tab" aria-selected="true"
-                   aria-controls="tab-content">Tasks</a>
+                   aria-controls="tab-content" hx-push-url="true">Tasks</a>
             </li>
             <li>
                 <a hx-get="/teams/" hx-target="#tab-content" role="tab" aria-selected="true"
-                   aria-controls="tab-content">Teams</a>
+                   aria-controls="tab-content" hx-push-url="true">Teams</a>
             </li>
             <li>
                 <div th:replace="~{logout_bth :: logout-btn}"></div>

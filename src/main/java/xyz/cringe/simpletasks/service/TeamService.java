@@ -31,12 +31,14 @@ public class TeamService {
     }
 
     public TeamDto getTeamByName(String name) {
-        TeamDto teamDto = new TeamDto();
         Team team = teamRepo.findByName(name);
         if (team != null) {
+            TeamDto teamDto = new TeamDto();
             teamDto.setName(team.getName());
             teamDto.setEnabled(team.getEnabled());
+            return teamDto;
         }
-        return teamDto;
+        return null;
     }
+
 }

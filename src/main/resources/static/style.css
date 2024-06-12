@@ -11,12 +11,14 @@ nav.main-tabs ul li .selected{
     text-decoration: underline;
 }
 
-.tasks-wrapper{
-    display: grid;
-    grid-template-columns: repeat(6, 60px 3fr);
-}
-
 .h-center-wrapper{
     width: 100%;
     text-align: center;
+}
+
+.items-wrapper{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
 }

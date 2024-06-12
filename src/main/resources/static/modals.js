@@ -8,9 +8,12 @@ let visibleModal = null;
 
 document.body.addEventListener('htmx:afterOnLoad', () => {
     document.querySelectorAll(".modal-btn").forEach(modal => {
-        modal.addEventListener("click", (event) => {
-            toggleModal(event);
-        });
+        if (!modal.dataset.listenerAdded) {
+            modal.addEventListener("click", (event) => {
+                toggleModal(event);
+            });
+            modal.dataset.listenerAdded = "true";
+        }
     });
 });
 
@@ -67,11 +70,3 @@ document.addEventListener("keydown", (event) => {
 const getScrollbarWidth = () => {
     return window.innerWidth - document.documentElement.clientWidth;
 };
-
-function htmxCloseModal(evt){
-    let m = this.closest("dialog.modal");
-    if(evt.detail.xhr.status === 200){
-        toggleModal(m);
-        //TODO
-    }
-}

@@ -15,7 +15,7 @@ import xyz.cringe.simpletasks.validator.UniqueTeam;
 public class TeamDto {
     @Size(min = 1, max = 255)
     @NotNull
-    @UniqueTeam //TODO fix unique check
+    @UniqueTeam
     private String name;
     private Boolean enabled;
 

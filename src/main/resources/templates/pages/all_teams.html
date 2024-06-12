@@ -1,4 +1,9 @@
-<div th:replace="~{layouts/modal :: content('Add new team', 'modal-add-new-team', '/teams/teams_form')}"></div>
-<div class="container">
-
+<div hx-ext="sse" sse-connect="/teams/sseTeams" sse-swap="message">
+    <div th:replace="~{layouts/modal :: content('Add new team', 'modal-add-new-team', '/teams/teams_form')}"></div>
+    <div class="container items-wrapper">
+        <article th:each="team : ${teams}" class="item" th:classappend="${team.getEnabled() ? '' : 'disabled-item'}">
+            <p th:text="${team.getName()}"></p>
+            <p th:if="!${team.getEnabled()}">Disabled</p>
+        </article>
+    </div>
 </div>

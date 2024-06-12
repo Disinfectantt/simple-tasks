@@ -13,7 +13,7 @@ public class TeamUniqValidator implements ConstraintValidator<UniqueTeam, String
     }
 
     @Override
-    public void initialize(UniqueTeam contactNumber) {
+    public void initialize(UniqueTeam uniqueTeam) {
     }
 
     @Override
