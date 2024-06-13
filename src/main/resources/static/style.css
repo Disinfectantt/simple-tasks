@@ -22,3 +22,16 @@ nav.main-tabs ul li .selected{
     gap: 1rem;
     margin-top: 1rem;
 }
+
+.btn-item-wrapper button{
+    scale: 80%;
+}
+
+.btn-del{
+    font-weight: bold;
+    border-color: var(--pico-color-red-650);
+}
+
+.edit-btn{
+    border-color: var(--pico-color-green-650);
+}

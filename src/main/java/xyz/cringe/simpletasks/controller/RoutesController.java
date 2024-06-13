@@ -1,5 +1,7 @@
 package xyz.cringe.simpletasks.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -7,7 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class RoutesController {
 
     @GetMapping("/login")
-    public String loginForm() {
+    public String loginForm(HttpServletRequest request, HttpServletResponse response) {
+        String headerValue = request.getHeader("HX-Request");
+        if (headerValue != null) {
+            response.setHeader("HX-Redirect", "/login");
+            return null;
+        }
         return "login";
     }
 

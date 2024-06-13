@@ -23,14 +23,25 @@ public class SseEmitterService {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         sseEmitters.putIfAbsent(username, new CopyOnWriteArrayList<>());
         sseEmitters.get(username).add(sseEmitter);
-        sseEmitter.onCompletion(() -> sseEmitters.get(username).remove(sseEmitter));
+        sseEmitter.onCompletion(() -> {
+            sseEmitters.get(username).remove(sseEmitter);
+            if (sseEmitters.get(username).isEmpty()) {
+                sseEmitters.remove(username);
+            }
+        });
         sseEmitter.onTimeout(() -> {
             sseEmitters.get(username).remove(sseEmitter);
+            if (sseEmitters.get(username).isEmpty()) {
+                sseEmitters.remove(username);
+            }
             sseEmitter.complete();
         });
         sseEmitter.onError((e) -> {
             logger.info("SseEmitter got error:", e);
             sseEmitters.get(username).remove(sseEmitter);
+            if (sseEmitters.get(username).isEmpty()) {
+                sseEmitters.remove(username);
+            }
         });
         return sseEmitter;
     }
@@ -44,13 +55,16 @@ public class SseEmitterService {
         return event;
     }
 
-    public void sendEvent(Logger logger, ConcurrentMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters, String username, SseEmitter.SseEventBuilder event) {
-        Collection<SseEmitter> emitters = sseEmitters.get(username);
-        for (SseEmitter emitter : emitters) {
-            try {
-                emitter.send(event);
-            } catch (IOException e) {
-                logger.info("SseEmitter got error:", e);
+    public void sendEvent(Logger logger, ConcurrentMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters, SseEmitter.SseEventBuilder event) {
+        for (var sseEmitterList : sseEmitters.entrySet()) {
+            Collection<SseEmitter> emitters = sseEmitterList.getValue();
+            for (SseEmitter emitter : emitters) {
+                try {
+                    emitter.send(event);
+                    // TODO need to fix unhandled exception
+                } catch (IOException e) {
+                    logger.info("SseEmitter got error:", e);
+                }
             }
         }
     }

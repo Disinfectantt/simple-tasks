@@ -1,18 +1,18 @@
 package xyz.cringe.simpletasks.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import xyz.cringe.simpletasks.annotations.HxRequestOnly;
 import xyz.cringe.simpletasks.dto.TeamDto;
 import xyz.cringe.simpletasks.model.Team;
 import xyz.cringe.simpletasks.service.SseEmitterService;
@@ -37,41 +37,74 @@ public class TeamController {
     }
 
     @GetMapping("/")
-    public String all(Model model) {
-        //TODO HX-Request header
+    public String all(Model model, HttpServletRequest request) {
         List<Team> teams = teamService.getAllTeams();
         model.addAttribute("teams", teams);
+        String hxRequestHeader = request.getHeader("HX-Request");
+        if (hxRequestHeader == null) {
+            model.addAttribute("currentPage", "/teams/");
+            return "index";
+        }
         return "pages/all_teams";
     }
 
+    @HxRequestOnly
     @GetMapping("/teams_form")
     public String teamsForm(TeamDto teamDto) {
         teamDto.setEnabled(true);
         return "layouts/forms/add-new-team";
     }
 
-    @PostMapping("/add")
-    public String add(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
-                      BindingResult result, Model model,
-                      @AuthenticationPrincipal UserDetails userDetails) {
-        if (result.hasErrors()) {
-            model.addAttribute("teamDto", teamDto);
-        } else {
-            teamService.createTeam(teamDto);
-            sseEmitterService.sendEvent(
-                    logger, sseEmitters,
-                    userDetails.getUsername(),
-                    sseEmitterService.buildData("pages/all_teams",
-                            teamService.getAllTeams(), "teams"));
-            teamDto.setEnabled(true);
-            teamDto.setName(null);
-        }
+    @HxRequestOnly
+    @GetMapping("/teams_form/{id}")
+    public String teamsFormById(@PathVariable Long id, Model model) {
+        TeamDto teamDto = teamService.getTeamById(id);
+        model.addAttribute("teamDto", teamDto);
         return "layouts/forms/add-new-team";
+    }
+
+    @PostMapping("/")
+    public String add(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
+                      BindingResult result, Model model) {
+        return processRequest(teamDto, result, model, null);
+    }
+
+    @PostMapping("/{id}")
+    public String update(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
+                         BindingResult result, Model model,
+                         @PathVariable Long id) {
+        return processRequest(teamDto, result, model, id);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        teamService.deleteTeamById(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/sseTeams")
     public SseEmitter sse(@AuthenticationPrincipal UserDetails userDetails) {
         return sseEmitterService.createSseEmitter(sseEmitters, userDetails.getUsername(), logger);
+    }
+
+    private String processRequest(TeamDto teamDto, BindingResult result, Model model, Long id) {
+        if (result.hasErrors()) {
+            model.addAttribute("teamDto", teamDto);
+        } else {
+            if (id == null) {
+                teamService.createTeam(teamDto);
+                teamDto.setEnabled(true);
+                teamDto.setName(null);
+            } else {
+                teamService.updateTeam(teamDto, id);
+            }
+            sseEmitterService.sendEvent(
+                    logger, sseEmitters,
+                    sseEmitterService.buildData("layouts/teams",
+                            teamService.getAllTeams(), "teams"));
+        }
+        return "layouts/forms/add-new-team";
     }
 
 }

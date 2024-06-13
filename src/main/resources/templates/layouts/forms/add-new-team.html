@@ -1,5 +1,6 @@
 <div id="form-edit">
-    <form hx-post="/teams/add" hx-target="#form-edit"
+    <form th:attr="hx-post='/teams/' + ${teamDto.getId() != null ? teamDto.getId() : ''}"
+          hx-target="#form-edit"
           hx-swap="outerHTML" id="taskForm"
           th:object="${teamDto}">
         <fieldset>
@@ -17,6 +18,7 @@
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}"/>
         </fieldset>
-        <button type="submit">Add team</button>
+        <button th:if="${teamDto.getId() == null}" type="submit">Add team</button>
+        <button th:if="${teamDto.getId() != null}" type="submit">Edit team</button>
     </form>
 </div>

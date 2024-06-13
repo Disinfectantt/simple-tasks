@@ -4,7 +4,7 @@
 <head th:replace="~{head :: common-head}"></head>
 <body>
 <header th:replace="~{header :: nav-header}"></header>
-<div id="tab-content" role="tabpanel" class="tab-content" hx-get="/tasks/" hx-trigger="load">
+<div id="tab-content" role="tabpanel" class="tab-content" th:attr="hx-get=${currentPage}" hx-trigger="load">
     <article aria-busy="true"></article>
 </div>
 <script src="https://unpkg.com/htmx.org@1.9.12/dist/ext/sse.js"></script>

@@ -1,4 +1,4 @@
-<div th:replace="~{layouts/modal :: content('Add new task', 'modal-add-new-task', 'tasks/tasks_form')}"></div>
+<div th:replace="~{layouts/modal :: content('Add new task', 'tasks/tasks_form')}"></div>
 <div class="container tasks-wrapper">
     <article th:each="task : ${tasks}" class="task-wrapper">
         <div th:replace="~{layouts.task :: task(${tasks})}"></div>

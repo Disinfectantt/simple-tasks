@@ -2,11 +2,17 @@
     <nav class="container main-tabs">
         <ul class="tab-list" role="tablist">
             <li>
-                <a hx-get="/tasks/" hx-target="#tab-content" class="selected" role="tab" aria-selected="true"
+                <a hx-get="/tasks/" hx-target="#tab-content"
+                   th:classappend="${currentPage == null || currentPage == '/tasks/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == null || currentPage == '/tasks/'} ? true : false"
+                   role="tab"
                    aria-controls="tab-content" hx-push-url="true">Tasks</a>
             </li>
             <li>
-                <a hx-get="/teams/" hx-target="#tab-content" role="tab" aria-selected="true"
+                <a hx-get="/teams/" hx-target="#tab-content"
+                   th:classappend="${currentPage == '/teams/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == '/teams/'} ? true : false"
+                   role="tab" aria-selected="true"
                    aria-controls="tab-content" hx-push-url="true">Teams</a>
             </li>
             <li>

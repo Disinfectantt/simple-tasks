@@ -18,5 +18,6 @@ public class TeamDto {
     @UniqueTeam
     private String name;
     private Boolean enabled;
+    private Long id;
 
 }
