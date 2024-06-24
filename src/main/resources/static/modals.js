@@ -7,12 +7,18 @@ const animationDuration = 400; // ms
 let visibleModal = null;
 
 document.body.addEventListener('htmx:afterOnLoad', () => {
-    document.querySelectorAll(".modal-btn").forEach(modal => {
-        if (!modal.dataset.listenerAdded) {
-            modal.addEventListener("click", (event) => {
+    document.querySelectorAll(".modal-btn").forEach(btn => {
+        if (!btn.dataset.listenerAdded) {
+            btn.addEventListener("click", (event) => {
                 toggleModal(event);
             });
-            modal.dataset.listenerAdded = "true";
+            btn.dataset.listenerAdded = "true";
+        }
+    });
+
+    document.addEventListener("closeModal", () => {
+        if(visibleModal){
+            closeModal(visibleModal);
         }
     });
 });

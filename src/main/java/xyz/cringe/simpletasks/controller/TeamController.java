@@ -1,6 +1,7 @@
 package xyz.cringe.simpletasks.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,21 +66,27 @@ public class TeamController {
 
     @PostMapping("/")
     public String add(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
-                      BindingResult result, Model model) {
-        return processRequest(teamDto, result, model, null);
+                      BindingResult result, Model model,
+                      HttpServletResponse response) {
+        return processRequest(teamDto, result, model, null, response);
     }
 
     @PostMapping("/{id}")
     public String update(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
                          BindingResult result, Model model,
-                         @PathVariable Long id) {
-        return processRequest(teamDto, result, model, id);
+                         @PathVariable Long id,
+                         HttpServletResponse response) {
+        return processRequest(teamDto, result, model, id, response);
     }
 
     @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         teamService.deleteTeamById(id);
+        sseEmitterService.sendEvent(
+                logger, sseEmitters,
+                sseEmitterService.buildData("layouts/teams",
+                        teamService.getAllTeams(), "teams"));
         return ResponseEntity.ok().build();
     }
 
@@ -88,7 +95,8 @@ public class TeamController {
         return sseEmitterService.createSseEmitter(sseEmitters, userDetails.getUsername(), logger);
     }
 
-    private String processRequest(TeamDto teamDto, BindingResult result, Model model, Long id) {
+    private String processRequest(TeamDto teamDto, BindingResult result, Model model, Long id,
+                                  HttpServletResponse response) {
         if (result.hasErrors()) {
             model.addAttribute("teamDto", teamDto);
         } else {
@@ -99,6 +107,7 @@ public class TeamController {
             } else {
                 teamService.updateTeam(teamDto, id);
             }
+            response.addHeader("Hx-Trigger", "closeModal");
             sseEmitterService.sendEvent(
                     logger, sseEmitters,
                     sseEmitterService.buildData("layouts/teams",
