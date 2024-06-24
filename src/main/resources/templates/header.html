@@ -15,6 +15,13 @@
                    role="tab" aria-selected="true"
                    aria-controls="tab-content" hx-push-url="true">Teams</a>
             </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a hx-get="/tasksStatuses/" hx-target="#tab-content"
+                   th:classappend="${currentPage == '/tasksStatuses/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == '/tasksStatuses/'} ? true : false"
+                   role="tab" aria-selected="true"
+                   aria-controls="tab-content" hx-push-url="true">Statuses</a>
+            </li>
             <li>
                 <div th:replace="~{logout_bth :: logout-btn}"></div>
             </li>

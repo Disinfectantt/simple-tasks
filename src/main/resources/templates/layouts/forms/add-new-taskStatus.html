@@ -1,0 +1,25 @@
+<div id="form-edit">
+    <form th:attr="hx-post='/tasksStatuses/' + ${taskStatusDto.getId() != null ? taskStatusDto.getId() : ''}"
+          hx-target="#form-edit"
+          hx-swap="outerHTML"
+          id="taskStatusForm"
+          th:object="${taskStatusDto}">
+        <fieldset>
+            <div th:if="${#fields.hasAnyErrors()}" class="form-error-wrapper container">
+                <article th:each="error : ${#fields.allErrors()}" th:text="${error}" class="pico-background-red-650">
+                </article>
+            </div>
+            <label for="status">Status*</label>
+            <input type="text" id="status" th:field="*{status}" required maxlength="255"/>
+            <label for="enabled">
+                <input type="checkbox" th:field="*{enabled}" id="enabled" checked/>
+                Enabled
+            </label>
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}"/>
+        </fieldset>
+        <button th:if="${taskStatusDto.getId() == null}" type="submit">Add status</button>
+        <button th:if="${taskStatusDto.getId() != null}" type="submit">Edit status</button>
+    </form>
+</div>

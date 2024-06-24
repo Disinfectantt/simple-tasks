@@ -1,0 +1,10 @@
+<div th:fragment="tasksStatuses-list(tasksStatuses)" class="container items-wrapper" hx-target="closest article" hx-swap="outerHTML">
+    <article th:each="taskStatus : ${tasksStatuses}" class="item" th:classappend="${taskStatus.getEnabled() ? '' : 'disabled-item'}">
+        <p th:text="${taskStatus.getStatus()}"></p>
+        <p th:if="!${taskStatus.getEnabled()}">Disabled</p>
+        <footer class="btn-item-wrapper">
+            <button th:replace="~{layouts/buttons/del-btn :: content('/tasksStatuses/', ${taskStatus.getId()})}"></button>
+            <button th:replace="~{layouts/buttons/edit-btn :: content('/tasksStatuses/tasksStatuses_form/', ${taskStatus.getId()})}"></button>
+        </footer>
+    </article>
+</div>

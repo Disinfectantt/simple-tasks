@@ -15,111 +15,107 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import xyz.cringe.simpletasks.annotations.HxRequestOnly;
-import xyz.cringe.simpletasks.dto.TeamDto;
-import xyz.cringe.simpletasks.model.Team;
+import xyz.cringe.simpletasks.dto.TaskStatusDto;
+import xyz.cringe.simpletasks.model.TaskStatus;
 import xyz.cringe.simpletasks.service.SseEmitterService;
-import xyz.cringe.simpletasks.service.TeamService;
+import xyz.cringe.simpletasks.service.TaskStatusService;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@RequestMapping("/teams")
+@PreAuthorize("hasRole('ADMIN')")
+@RequestMapping("/tasksStatuses")
 @Controller
-public class TeamController {
-    private final TeamService teamService;
+public class TaskStatusController {
+    private final TaskStatusService taskStatusService;
     private final ConcurrentMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters = new ConcurrentHashMap<>();
-    private final Logger logger = LoggerFactory.getLogger(TeamController.class);
+    private final Logger logger = LoggerFactory.getLogger(TaskStatusController.class);
     private final SseEmitterService sseEmitterService;
 
-    public TeamController(TeamService teamService, SseEmitterService sseEmitterService) {
-        this.teamService = teamService;
+    public TaskStatusController(TaskStatusService taskStatusService, SseEmitterService sseEmitterService) {
+        this.taskStatusService = taskStatusService;
         this.sseEmitterService = sseEmitterService;
     }
 
     @GetMapping("/")
     public String all(Model model, HttpServletRequest request) {
-        List<Team> teams = teamService.getAllTeams();
-        model.addAttribute("teams", teams);
+        List<TaskStatus> tasksStatuses = taskStatusService.getAllTaskStatus();
+        model.addAttribute("tasksStatuses", tasksStatuses);
         String hxRequestHeader = request.getHeader("HX-Request");
         if (hxRequestHeader == null) {
-            model.addAttribute("currentPage", "/teams/");
+            model.addAttribute("currentPage", "/tasksStatuses/");
             return "index";
         }
-        return "pages/all_teams";
+        return "pages/all_taskStatuses";
     }
 
     @HxRequestOnly
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/teams_form")
-    public String teamsForm(TeamDto teamDto) {
-        teamDto.setEnabled(true);
-        return "layouts/forms/add-new-team";
+    @GetMapping("/taskStatuses_form")
+    public String teamsForm(TaskStatus taskStatusDto, Model model) {
+        taskStatusDto.setEnabled(true);
+        model.addAttribute("taskStatusDto", taskStatusDto);
+        return "layouts/forms/add-new-taskStatus";
     }
 
     @HxRequestOnly
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/teams_form/{id}")
+    @GetMapping("/tasksStatuses_form/{id}")
     public String teamsFormById(@PathVariable Long id, Model model) {
-        TeamDto teamDto = teamService.getTeamById(id);
-        model.addAttribute("teamDto", teamDto);
-        return "layouts/forms/add-new-team";
+        TaskStatusDto taskStatusDto = taskStatusService.getTaskStatus(id);
+        model.addAttribute("taskStatusDto", taskStatusDto);
+        return "layouts/forms/add-new-taskStatus";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/")
-    public String add(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
+    public String add(@Valid @ModelAttribute("taskStatusDto") TaskStatusDto taskStatusDto,
                       BindingResult result, Model model,
                       HttpServletResponse response) {
-        return processRequest(teamDto, result, model, null, response);
+        return processRequest(taskStatusDto, result, model, null, response);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/{id}")
-    public String update(@Valid @ModelAttribute("teamDto") TeamDto teamDto,
+    public String update(@Valid @ModelAttribute("taskStatusDto") TaskStatusDto taskStatusDto,
                          BindingResult result, Model model,
                          @PathVariable Long id,
                          HttpServletResponse response) {
-        return processRequest(teamDto, result, model, id, response);
+        return processRequest(taskStatusDto, result, model, id, response);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        teamService.deleteTeamById(id);
+        taskStatusService.deleteTaskStatus(id);
         sseEmitterService.sendEvent(
                 logger, sseEmitters,
-                sseEmitterService.buildData("layouts/teams",
-                        teamService.getAllTeams(), "teams"));
+                sseEmitterService.buildData("layouts/tasksStatuses",
+                        taskStatusService.getAllTaskStatus(), "tasksStatuses"));
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/sseTeams")
+    @GetMapping("/sseTasksStatuses")
     public SseEmitter sse(@AuthenticationPrincipal UserDetails userDetails) {
         return sseEmitterService.createSseEmitter(sseEmitters, userDetails.getUsername(), logger);
     }
 
-    private String processRequest(TeamDto teamDto, BindingResult result, Model model, Long id,
+    private String processRequest(TaskStatusDto taskStatusDto, BindingResult result, Model model, Long id,
                                   HttpServletResponse response) {
         if (result.hasErrors()) {
-            model.addAttribute("teamDto", teamDto);
+            model.addAttribute("taskStatusDto", taskStatusDto);
         } else {
             if (id == null) {
-                teamService.createTeam(teamDto);
-                teamDto.setEnabled(true);
-                teamDto.setName(null);
+                taskStatusService.createTaskStatus(taskStatusDto);
+                taskStatusDto.setEnabled(true);
+                taskStatusDto.setStatus(null);
             } else {
-                teamService.updateTeam(teamDto, id);
+                taskStatusService.updateTaskStatus(id, taskStatusDto);
             }
             response.addHeader("Hx-Trigger", "closeModal");
             sseEmitterService.sendEvent(
                     logger, sseEmitters,
-                    sseEmitterService.buildData("layouts/teams",
-                            teamService.getAllTeams(), "teams"));
+                    sseEmitterService.buildData("layouts/tasksStatuses",
+                            taskStatusService.getAllTaskStatus(), "tasksStatuses"));
         }
-        return "layouts/forms/add-new-team";
+        return "layouts/forms/add-new-taskStatus";
     }
-
 }

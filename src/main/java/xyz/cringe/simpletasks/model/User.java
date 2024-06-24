@@ -20,7 +20,7 @@ public class User {
     private String username;
     @Column(nullable = false)
     private String password;
-    private Boolean enabled = false;
+    private Boolean enabled = true;
     private String email;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

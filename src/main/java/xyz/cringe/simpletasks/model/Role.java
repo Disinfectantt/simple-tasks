@@ -20,5 +20,9 @@ public class Role {
     private String name;
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
-    private Boolean enabled = false;
+    private Boolean enabled = true;
+
+    public Role(String name) {
+        this.name = name;
+    }
 }

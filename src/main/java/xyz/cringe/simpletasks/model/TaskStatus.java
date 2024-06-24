@@ -16,5 +16,5 @@ public class TaskStatus {
     private Long id;
     @Column(nullable = false, unique = true)
     private String status;
-    private Boolean enabled = false;
+    private Boolean enabled = true;
 }
