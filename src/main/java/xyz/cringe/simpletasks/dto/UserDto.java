@@ -8,6 +8,7 @@ import lombok.Setter;
 import xyz.cringe.simpletasks.model.Role;
 import xyz.cringe.simpletasks.model.User;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -23,19 +24,22 @@ public class UserDto {
     private String password;
     private String email;
     private Boolean enabled = false;
-    private Set<RoleDto> roles;
-    private TeamDto team;
+    private Set<Long> roles;
+    private Long teamId;
 
     public UserDto(User user) {
+        this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.email = user.getEmail();
         this.enabled = user.getEnabled();
-        for (Role role : user.getRoles()) {
-            roles.add(new RoleDto(role.getName()));
+        if (user.getRoles() != null) {
+            roles = new HashSet<>();
+            for (Role role : user.getRoles()) {
+                roles.add(role.getId());
+            }
         }
-        this.team.setName(user.getTeam().getName());
-        this.team.setId(user.getTeam().getId());
-        this.team.setEnabled(user.getTeam().getEnabled());
+        if (user.getTeam() != null)
+            this.teamId = user.getTeam().getId();
     }
 }

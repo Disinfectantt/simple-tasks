@@ -26,6 +26,10 @@ public class TaskStatusService {
         return dto;
     }
 
+    public TaskStatus getTask(Long taskId) {
+        return taskStatusRepo.findById(taskId).orElse(null);
+    }
+
     public List<TaskStatus> getAllTaskStatus() {
         return taskStatusRepo.findAll();
     }

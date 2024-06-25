@@ -27,6 +27,10 @@ public class TeamService {
         return null;
     }
 
+    public Team getTeam(Long id) {
+        return teamRepo.findById(id).orElse(null);
+    }
+
     public void createTeam(TeamDto teamDto) {
         Team team = new Team();
         team.setName(teamDto.getName());

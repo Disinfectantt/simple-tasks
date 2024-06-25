@@ -119,7 +119,7 @@ public class TeamController {
                     sseEmitterService.buildData("layouts/teams",
                             teamService.getAllTeams(), "teams"));
         }
-        return "layouts/forms/add-new-team";
+        return "layouts/forms/add-new-teamId";
     }
 
 }

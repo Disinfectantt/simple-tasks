@@ -4,17 +4,17 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import xyz.cringe.simpletasks.service.TeamService;
 
-public class TeamUniqValidator implements ConstraintValidator<UniqueTeam, String> {
+public class TeamValidator implements ConstraintValidator<TeamValid, Long> {
 
     private final TeamService teamService;
 
-    TeamUniqValidator(TeamService teamService) {
+    public TeamValidator(TeamService teamService) {
         this.teamService = teamService;
     }
 
     @Override
-    public boolean isValid(String teamNameField,
+    public boolean isValid(Long teamId,
                            ConstraintValidatorContext cxt) {
-        return teamNameField != null && teamService.getTeamByName(teamNameField) == null;
+        return teamId != null && teamService.getTeamById(teamId) != null;
     }
 }
