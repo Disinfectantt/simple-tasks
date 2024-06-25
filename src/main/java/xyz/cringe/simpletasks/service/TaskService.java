@@ -5,6 +5,7 @@ import xyz.cringe.simpletasks.dto.TaskDto;
 import xyz.cringe.simpletasks.model.Task;
 import xyz.cringe.simpletasks.repo.TaskRepo;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -46,6 +47,8 @@ public class TaskService {
     public void updateCurrentWorker(Long id, String username) {
         Task task = taskRepo.findByIdWithStatus(id);
         if (task != null) {
+            if (task.getWorkers() == null)
+                task.setWorkers(new HashSet<>());
             task.getWorkers().add(userService.findByUsernameUser(username));
             taskRepo.save(task);
         }

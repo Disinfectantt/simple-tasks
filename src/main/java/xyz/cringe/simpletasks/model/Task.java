@@ -28,7 +28,7 @@ public class Task {
 
     private Integer difficulty = 0;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "team_id")
     private Team team;
 

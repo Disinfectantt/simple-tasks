@@ -7,7 +7,6 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,26 +22,12 @@ public class SseEmitterService {
         SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
         sseEmitters.putIfAbsent(username, new CopyOnWriteArrayList<>());
         sseEmitters.get(username).add(sseEmitter);
-        sseEmitter.onCompletion(() -> {
-            sseEmitters.get(username).remove(sseEmitter);
-            if (sseEmitters.get(username).isEmpty()) {
-                sseEmitters.remove(username);
-            }
-        });
+        sseEmitter.onCompletion(() -> removeEmitter(sseEmitters, sseEmitter, logger, username, null));
         sseEmitter.onTimeout(() -> {
-            sseEmitters.get(username).remove(sseEmitter);
-            if (sseEmitters.get(username).isEmpty()) {
-                sseEmitters.remove(username);
-            }
+            removeEmitter(sseEmitters, sseEmitter, logger, username, null);
             sseEmitter.complete();
         });
-        sseEmitter.onError((e) -> {
-            logger.info("SseEmitter got error:", e);
-            sseEmitters.get(username).remove(sseEmitter);
-            if (sseEmitters.get(username).isEmpty()) {
-                sseEmitters.remove(username);
-            }
-        });
+        sseEmitter.onError((e) -> removeEmitter(sseEmitters, sseEmitter, logger, username, e));
         return sseEmitter;
     }
 
@@ -56,17 +41,27 @@ public class SseEmitterService {
     }
 
     public void sendEvent(Logger logger, ConcurrentMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters, SseEmitter.SseEventBuilder event) {
-        for (var sseEmitterList : sseEmitters.entrySet()) {
-            Collection<SseEmitter> emitters = sseEmitterList.getValue();
-            for (SseEmitter emitter : emitters) {
-                try {
-                    emitter.send(event);
-                    // TODO need to fix unhandled exception
-                } catch (IOException e) {
-                    logger.info("SseEmitter got error:", e);
-                }
+        // TODO UNHANDLED EXCEPTIONS ????
+        sseEmitters.forEach((key, emitters) -> emitters.forEach(emitter -> {
+            try {
+                emitter.send(event);
+            } catch (IOException e) {
+                logger.warn("Failed to send event: {}", e.getMessage());
             }
+        }));
+    }
+
+    protected void removeEmitter(ConcurrentMap<String, CopyOnWriteArrayList<SseEmitter>> sseEmitters,
+                                 SseEmitter sseEmitter,
+                                 Logger logger,
+                                 String username,
+                                 Throwable e) {
+        sseEmitters.get(username).remove(sseEmitter);
+        if (sseEmitters.get(username).isEmpty()) {
+            sseEmitters.remove(username);
         }
+        if (e != null)
+            logger.warn("SseEmitter got error: {}", e.getMessage());
     }
 
 }

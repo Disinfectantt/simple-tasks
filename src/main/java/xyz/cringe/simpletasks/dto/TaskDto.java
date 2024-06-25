@@ -37,8 +37,10 @@ public class TaskDto {
         description = task.getDescription();
         priority = task.getPriority();
         difficulty = task.getDifficulty();
-        teamId = task.getTeam().getId();
-        statusId = task.getStatus().getId();
+        if (task.getTeam() != null)
+            teamId = task.getTeam().getId();
+        if (task.getStatus() != null)
+            statusId = task.getStatus().getId();
         if (task.getWorkers() != null) {
             workers = task.getWorkers().stream()
                     .map(User::getId)
