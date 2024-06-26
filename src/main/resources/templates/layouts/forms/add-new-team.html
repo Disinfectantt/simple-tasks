@@ -1,0 +1,24 @@
+<div id="form-edit">
+    <form th:attr="hx-post='/teams/' + ${teamDto.getId() != null ? teamDto.getId() : ''}"
+          hx-target="#form-edit"
+          hx-swap="outerHTML" id="taskForm"
+          th:object="${teamDto}">
+        <fieldset>
+            <div th:if="${#fields.hasAnyErrors()}" class="form-error-wrapper container">
+                <article th:each="error : ${#fields.allErrors()}" th:text="${error}" class="pico-background-red-650">
+                </article>
+            </div>
+            <label for="name">Name*</label>
+            <input type="text" id="name" th:field="*{name}" required maxlength="255"/>
+            <label for="enabled">
+                <input type="checkbox" th:field="*{enabled}" id="enabled" checked/>
+                Enabled
+            </label>
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}"/>
+        </fieldset>
+        <button th:if="${teamDto.getId() == null}" type="submit">Add team</button>
+        <button th:if="${teamDto.getId() != null}" type="submit">Edit team</button>
+    </form>
+</div>

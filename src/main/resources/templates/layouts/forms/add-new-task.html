@@ -1,0 +1,32 @@
+<div id="form-edit">
+    <form th:attr="hx-post='/tasks/' + ${taskDto.getId() != null ? taskDto.getId() : ''}"
+          hx-target="#form-edit"
+          hx-swap="outerHTML"
+          id="taskForm"
+          th:object="${taskDto}">
+        <fieldset>
+            <div th:if="${#fields.hasAnyErrors()}" class="form-error-wrapper container">
+                <article th:each="error : ${#fields.allErrors()}" th:text="${error}" class="pico-background-red-650">
+                </article>
+            </div>
+            <label for="name">Name*</label>
+            <input type="text" id="name" th:field="*{name}" required maxlength="255"/>
+            <label for="description">Description*</label>
+            <input type="text" id="description" th:field="*{description}" required maxlength="255"/>
+            <label for="priority">Priority*</label>
+            <input type="number" id="priority" th:field="*{priority}" required maxlength="255" min="0" max="10"/>
+            <label for="difficulty">Difficulty*</label>
+            <input type="number" id="difficulty" th:field="*{difficulty}" required maxlength="255" min="0" max="10"/>
+            <label for="team">Team*</label>
+            <select th:field="*{teamId}" id="team">
+                <option th:each="team : ${teams}" th:value="${team.getId()}" th:text="${team.getName()}"></option>
+            </select>
+            <label for="status">Status*</label>
+            <select th:field="*{statusId}" id="status">
+                <option th:each="status : ${statuses}" th:value="${status.getId()}" th:text="${status.getStatus()}"></option>
+            </select>
+        </fieldset>
+        <button th:if="${taskDto.getId() == null}" type="submit">Add task</button>
+        <button th:if="${taskDto.getId() != null}" type="submit">Edit task</button>
+    </form>
+</div>

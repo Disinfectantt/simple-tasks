@@ -1,0 +1,10 @@
+<div th:fragment="teams-list(teams)" class="container items-wrapper" hx-target="closest article" hx-swap="outerHTML">
+    <article th:each="team : ${teams}" class="item" th:classappend="${team.getEnabled() ? '' : 'disabled-item'}">
+        <p th:text="${team.getName()}"></p>
+        <p th:if="!${team.getEnabled()}">Disabled</p>
+        <footer class="btn-item-wrapper">
+            <button th:replace="~{layouts/buttons/del-btn :: content('/teams/', ${team.getId()})}"></button>
+            <button th:replace="~{layouts/buttons/edit-btn :: content('/teams/teams_form/', ${team.getId()})}"></button>
+        </footer>
+    </article>
+</div>

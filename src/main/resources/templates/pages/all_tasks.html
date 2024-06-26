@@ -1,0 +1,4 @@
+<div th:replace="~{layouts/modal :: content('Add new task', '/tasks/task_form')}"></div>
+<div hx-ext="sse" sse-connect="/tasks/sseTasks" sse-swap="message">
+    <div th:replace="~{layouts/tasks :: tasks-list(${tasks})}"></div>
+</div>

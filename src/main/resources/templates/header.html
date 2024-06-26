@@ -1,0 +1,47 @@
+<header th:fragment="nav-header">
+    <nav class="container main-tabs">
+        <ul class="tab-list" role="tablist">
+            <li>
+                <a hx-get="/tasks/" hx-target="#tab-content"
+                   th:classappend="${currentPage == null || currentPage == '/tasks/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == null || currentPage == '/tasks/'} ? true : false"
+                   role="tab"
+                   aria-controls="tab-content" hx-push-url="true">Tasks</a>
+            </li>
+            <li>
+                <a hx-get="/teams/" hx-target="#tab-content"
+                   th:classappend="${currentPage == '/teams/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == '/teams/'} ? true : false"
+                   role="tab" aria-selected="true"
+                   aria-controls="tab-content" hx-push-url="true">Teams</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a hx-get="/tasksStatuses/" hx-target="#tab-content"
+                   th:classappend="${currentPage == '/tasksStatuses/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == '/tasksStatuses/'} ? true : false"
+                   role="tab" aria-selected="true"
+                   aria-controls="tab-content" hx-push-url="true">Statuses</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a hx-get="/users/" hx-target="#tab-content"
+                   th:classappend="${currentPage == '/users/'} ? 'selected'"
+                   th:attr="aria-selected=${currentPage == '/users/'} ? true : false"
+                   role="tab" aria-selected="true"
+                   aria-controls="tab-content" hx-push-url="true">Users</a>
+            </li>
+            <li>
+                <div th:replace="~{logout_bth :: logout-btn}"></div>
+            </li>
+        </ul>
+    </nav>
+    <script>
+        document.querySelectorAll('.tab-list a').forEach((tab) => {
+            tab.addEventListener('click', (event) => {
+                document.querySelectorAll('.tab-list a').forEach((otherTab) => {
+                    otherTab.classList.remove('selected');
+                });
+                event.currentTarget.classList.add('selected');
+            });
+        });
+    </script>
+</header>

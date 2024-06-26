@@ -1,0 +1,4 @@
+<div th:replace="~{layouts/modal :: content('Add new user', '/users/user_form')}"></div>
+<div hx-ext="sse" sse-connect="/users/sseUsers" sse-swap="message">
+    <div th:replace="~{layouts/users :: users-list(${users})}"></div>
+</div>

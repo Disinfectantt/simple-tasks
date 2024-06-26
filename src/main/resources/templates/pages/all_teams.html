@@ -1,0 +1,4 @@
+<div th:replace="~{layouts/modal :: content('Add new team', '/teams/teams_form')}"></div>
+<div hx-ext="sse" sse-connect="/teams/sseTeams" sse-swap="message">
+    <div th:replace="~{layouts/teams :: teams-list(${teams})}"></div>
+</div>

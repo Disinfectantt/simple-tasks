@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{head :: common-head}"></head>
+<body>
+<header th:replace="~{header :: nav-header}"></header>
+<div id="tab-content" role="tabpanel" class="tab-content" th:attr="hx-get=${currentPage}" hx-trigger="load">
+    <article aria-busy="true"></article>
+</div>
+<script src="https://unpkg.com/htmx-ext-sse@2.0.0/sse.js"></script>
+<script th:src="@{/modals.js}"></script>
+</body>
+</html>

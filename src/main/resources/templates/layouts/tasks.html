@@ -1,0 +1,19 @@
+<div th:fragment="tasks-list(tasks)" class="container items-wrapper" hx-target="closest article" hx-swap="outerHTML">
+    <article th:each="task : ${tasks}" class="item">
+        <p th:text="${task.getName()}"></p>
+        <p th:text="${task.getDescription()}"></p>
+        <p th:text="${'Difficulty: ' + task.getDifficulty()}"></p>
+        <p th:text="${'Priority: ' + task.getPriority()}"></p>
+        <p th:text="${task.getStatus().getStatus()}"></p>
+        <div th:if="${task.getWorkers().size() > 0}">
+            <p>Taken by:</p>
+            <p th:each="worker : ${task.getWorkers()}" th:text="${worker.getUsername()}"></p>
+        </div>
+        <footer class="btn-item-wrapper">
+            <button th:replace="~{layouts/buttons/del-btn :: content('/tasks/', ${task.getId()})}"></button>
+            <button th:replace="~{layouts/buttons/edit-btn :: content('/tasks/tasks_form/', ${task.getId()})}"></button>
+            <button th:if="${task.getWorkers().size() == 0}" class="pico-color-red-650 btn-take"
+            th:attr="hx-post='/tasks/take/' + ${task.getId()}" hx-swap="none">Take</button>
+        </footer>
+    </article>
+</div>
