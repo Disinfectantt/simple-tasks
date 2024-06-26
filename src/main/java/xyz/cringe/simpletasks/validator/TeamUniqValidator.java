@@ -8,7 +8,7 @@ public class TeamUniqValidator implements ConstraintValidator<UniqueTeam, String
 
     private final TeamService teamService;
 
-    TeamUniqValidator(TeamService teamService) {
+    public TeamUniqValidator(TeamService teamService) {
         this.teamService = teamService;
     }
 

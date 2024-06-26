@@ -48,6 +48,7 @@ public class SseEmitterServiceTest {
         assertThat(sseEmitters.get("testUser")).contains(emitter);
     }
 
+    // TODO
 //    @Test
 //    void testSseEmitterOnCompletion() {
 //        SseEmitter emitter = sseEmitterService.createSseEmitter(sseEmitters, "testUser", logger);
